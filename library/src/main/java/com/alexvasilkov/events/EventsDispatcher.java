@@ -245,7 +245,10 @@ final class EventsDispatcher {
             if (null != singleEventsWithId) {
                 for (final Event singleEvent : singleEventsWithId) {
                     if (isSameEvent(event, singleEvent)) {
-                        return;
+                        if (event.eventReceiver.getTargetId().equals(singleEvent.eventReceiver.getTargetId())) {
+                            return;
+                        }
+                        break;
                     }
                 }
             }
