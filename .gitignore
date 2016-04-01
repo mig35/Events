@@ -3,3 +3,4 @@
 .idea
 *.iml
 /library/local.properties
+/local.properties
