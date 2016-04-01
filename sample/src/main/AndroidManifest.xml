@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
-    package="com.alexvasilkov.events.sample"
+    package="com.azoft.events.sample"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
-        android:name=".app.SampleApplication"
+        android:name="com.azoft.events.sample.app.SampleApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="Events"

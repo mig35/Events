@@ -1,10 +1,10 @@
-package com.alexvasilkov.events.cache;
+package com.azoft.events.cache;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
-import com.alexvasilkov.events.Event;
+import com.azoft.events.Event;
 
 import java.util.HashMap;
 import java.util.Iterator;

@@ -1,9 +1,9 @@
-package com.alexvasilkov.events.sample.base;
+package com.azoft.events.sample.base;
 
 import android.app.Fragment;
 import android.os.Bundle;
 
-import com.alexvasilkov.events.EventsFragment;
+import com.azoft.events.EventsFragment;
 
 public abstract class BaseFragment extends Fragment {
 

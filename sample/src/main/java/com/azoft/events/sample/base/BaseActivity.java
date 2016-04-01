@@ -1,9 +1,9 @@
-package com.alexvasilkov.events.sample.base;
+package com.azoft.events.sample.base;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.alexvasilkov.events.EventsActivity;
+import com.azoft.events.EventsActivity;
 
 public abstract class BaseActivity extends AppCompatActivity {
 

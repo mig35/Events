@@ -1,16 +1,10 @@
-package com.alexvasilkov.events;
+package com.azoft.events;
 
 import android.os.Build;
 import android.view.View;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Date: 8/19/2014
- * Time: 1:54 PM
- *
- * @author MiG35
- */
 final class IdsGenerationUtil {
 
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);

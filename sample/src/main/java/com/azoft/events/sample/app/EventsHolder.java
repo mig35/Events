@@ -1,12 +1,12 @@
-package com.alexvasilkov.events.sample.app;
+package com.azoft.events.sample.app;
 
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 
-import com.alexvasilkov.events.Event;
-import com.alexvasilkov.events.Events;
-import com.alexvasilkov.events.sample.R;
+import com.azoft.events.Event;
+import com.azoft.events.Events;
+import com.azoft.events.sample.R;
 
 @SuppressWarnings("MethodMayBeStatic")
 final class EventsHolder {

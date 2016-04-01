@@ -1,6 +1,6 @@
-package com.alexvasilkov.events.cache;
+package com.azoft.events.cache;
 
-import com.alexvasilkov.events.Event;
+import com.azoft.events.Event;
 
 public interface CacheProvider {
 

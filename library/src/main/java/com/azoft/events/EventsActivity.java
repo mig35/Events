@@ -1,4 +1,4 @@
-package com.alexvasilkov.events;
+package com.azoft.events;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -18,12 +18,10 @@ import java.util.UUID;
  * 3. No event will be triggered after onSaveInstanceState method call (after this call it is not save to perform any operation).<br />
  * <br />
  * Please call all lifecycle methods of this class
- *
- * @author MiG35
  */
 public final class EventsActivity {
 
-    private static final String EXTRA_EVENTS_UID = "com.alexvasilkov.events.EventsActivity.EXTRA_EVENTS_UID";
+    private static final String EXTRA_EVENTS_UID = "com.azoft.events.EventsActivity.EXTRA_EVENTS_UID";
 
     private static final Map<Activity, String> ACTIVITY_UIDS_LIST = new HashMap<Activity, String>();
 

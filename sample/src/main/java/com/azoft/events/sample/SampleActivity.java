@@ -1,14 +1,14 @@
-package com.alexvasilkov.events.sample;
+package com.azoft.events.sample;
 
 import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.alexvasilkov.events.Event;
-import com.alexvasilkov.events.EventCallback;
-import com.alexvasilkov.events.Events;
-import com.alexvasilkov.events.sample.base.BaseActivity;
+import com.azoft.events.Event;
+import com.azoft.events.EventCallback;
+import com.azoft.events.Events;
+import com.azoft.events.sample.base.BaseActivity;
 
 public final class SampleActivity extends BaseActivity {
 

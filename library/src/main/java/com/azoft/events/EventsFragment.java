@@ -1,4 +1,4 @@
-package com.alexvasilkov.events;
+package com.azoft.events;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -20,14 +20,10 @@ import java.util.Map;
  * Do not use this class for <b>retain</b> fragments!<br/>
  * Please call all lifecycle methods of this class
  * <p/>
- * Date: 9/15/2014
- * Time: 11:43 AM
- *
- * @author MiG35
  */
 public final class EventsFragment {
 
-    private static final String EXTRA_EVENTS_UID = "com.alexvasilkov.events.EventsViewFragment.EXTRA_EVENTS_UID";
+    private static final String EXTRA_EVENTS_UID = "com.azoft.events.EventsViewFragment.EXTRA_EVENTS_UID";
 
     private static final Map<Object, String> FRAGMENT_UIDS_LIST = new HashMap<Object, String>();
 

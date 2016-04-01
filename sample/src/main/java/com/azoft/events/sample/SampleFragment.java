@@ -1,4 +1,4 @@
-package com.alexvasilkov.events.sample;
+package com.azoft.events.sample;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,9 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.alexvasilkov.events.Event;
-import com.alexvasilkov.events.Events;
-import com.alexvasilkov.events.sample.base.BaseFragment;
+import com.azoft.events.Event;
+import com.azoft.events.Events;
+import com.azoft.events.sample.base.BaseFragment;
 
 public final class SampleFragment extends BaseFragment {
 

@@ -1,7 +1,7 @@
-package com.alexvasilkov.events;
+package com.azoft.events;
 
 import android.util.Log;
-import com.alexvasilkov.events.cache.CacheProvider;
+import com.azoft.events.cache.CacheProvider;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

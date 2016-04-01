@@ -1,8 +1,8 @@
-package com.alexvasilkov.events;
+package com.azoft.events;
 
 import android.content.Context;
 
-import com.alexvasilkov.events.cache.CacheProvider;
+import com.azoft.events.cache.CacheProvider;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -85,13 +85,13 @@ public final class Events {
     /**
      * Methods marked with this annotation will receive events in the main thread.
      * <p/>
-     * Unlike {@link com.alexvasilkov.events.Events.AsyncMethod} and
-     * {@link com.alexvasilkov.events.Events.UiMethod} annotations no callbacks will be send back.
+     * Unlike {@link com.azoft.events.Events.AsyncMethod} and
+     * {@link com.azoft.events.Events.UiMethod} annotations no callbacks will be send back.
      * <p/>
      * <b>Note</b>: for each event id there can be any number of handlers marked with this annotation,
      * but you can't mix them with other handlers marked as
-     * {@link com.alexvasilkov.events.Events.AsyncMethod} or
-     * {@link com.alexvasilkov.events.Events.UiMethod}.
+     * {@link com.azoft.events.Events.AsyncMethod} or
+     * {@link com.azoft.events.Events.UiMethod}.
      * <p/>
      * You <b>can't</b> set both value and key parameters. 0 and "" values are illegal.
      */
@@ -108,10 +108,10 @@ public final class Events {
      * Methods marked with this annotation will receive events in <b>background thread</b>.
      * <p/>
      * <b>Note</b>: for each event id you can use only one method marked with this annotation. You also cannot use other
-     * handlers marked as {@link com.alexvasilkov.events.Events.UiMethod} or
-     * {@link com.alexvasilkov.events.Events.Receiver} for this event id.
+     * handlers marked as {@link com.azoft.events.Events.UiMethod} or
+     * {@link com.azoft.events.Events.Receiver} for this event id.
      * <p/>
-     * See also {@link com.alexvasilkov.events.Events.Callback} annotation.
+     * See also {@link com.azoft.events.Events.Callback} annotation.
      * <p/>
      * You <b>can't</b> set both value and key parameters. 0 and "" values are illegal.
      */
@@ -130,10 +130,10 @@ public final class Events {
      * Methods marked with this annotation will receive events in <b>main thread</b>.
      * <p/>
      * <b>Note</b>: for each event id you can use only one method marked with this annotation. You also cannot use other
-     * handlers marked as {@link com.alexvasilkov.events.Events.AsyncMethod} or
-     * {@link com.alexvasilkov.events.Events.Receiver} for this event id.
+     * handlers marked as {@link com.azoft.events.Events.AsyncMethod} or
+     * {@link com.azoft.events.Events.Receiver} for this event id.
      * <p/>
-     * See also {@link com.alexvasilkov.events.Events.Callback} annotation.
+     * See also {@link com.azoft.events.Events.Callback} annotation.
      * <p/>
      * You <b>can't</b> set both value and key parameters. 0 and "" values are illegal.
      */
@@ -148,8 +148,8 @@ public final class Events {
 
     /**
      * Methods marked with this annotation will receive callbacks from execution method (marked with
-     * {@link com.alexvasilkov.events.Events.AsyncMethod} or
-     * {@link com.alexvasilkov.events.Events.UiMethod} annotation) with statuses:
+     * {@link com.azoft.events.Events.AsyncMethod} or
+     * {@link com.azoft.events.Events.UiMethod} annotation) with statuses:
      * <ul>
      * <li/>{@link EventCallback.Status#STARTED}
      * <li/>{@link EventCallback.Status#RESULT}<br/>

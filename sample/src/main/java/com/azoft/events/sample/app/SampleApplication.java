@@ -1,8 +1,8 @@
-package com.alexvasilkov.events.sample.app;
+package com.azoft.events.sample.app;
 
 import android.app.Application;
 
-import com.alexvasilkov.events.Events;
+import com.azoft.events.Events;
 
 public final class SampleApplication extends Application {
 
