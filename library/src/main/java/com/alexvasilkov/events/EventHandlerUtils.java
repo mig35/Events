@@ -1,6 +1,7 @@
 package com.alexvasilkov.events;
 
 import android.util.Log;
+
 import com.alexvasilkov.events.cache.CacheProvider;
 
 import java.lang.reflect.Method;
@@ -24,7 +25,7 @@ final class EventHandlerUtils {
     public static LinkedList<EventHandler> getMethodsFromClass(final Class<?> clazz) {
         LinkedList<EventHandler> methods = HANDLERS_CACHE.get(clazz);
 
-        if (methods == null) {
+        if (null == methods) {
             final long start = System.currentTimeMillis();
             methods = new LinkedList<EventHandler>();
             collectMethods(clazz, methods);
@@ -38,14 +39,15 @@ final class EventHandlerUtils {
         return methods;
     }
 
+    @SuppressWarnings("ObjectAllocationInLoop")
     private static void collectMethods(final Class<?> clazz, final LinkedList<EventHandler> list) {
-        if (clazz.getName().startsWith("android.") || clazz == Object.class) {
+        if (clazz.getName().startsWith("android.") || Object.class == clazz) {
             return; // Ignoring system classes
         }
 
         // Looking for methods annotated as event handlers
         final Method[] methods = clazz.getDeclaredMethods();
-        if (methods != null) {
+        if (null != methods) {
             for (final Method m : methods) {
                 if (m.isAnnotationPresent(Events.Receiver.class)) {
                     if (Events.isDebug) {
@@ -56,8 +58,8 @@ final class EventHandlerUtils {
 
                     final int[] ids = m.getAnnotation(Events.Receiver.class).value();
                     boolean hasData = false;
-                    if (ids != null) {
-                        if (ids.length > 0) {
+                    if (null != ids) {
+                        if (0 < ids.length) {
                             hasData = true;
                         }
                         for (final int id : ids) {
@@ -65,8 +67,8 @@ final class EventHandlerUtils {
                         }
                     }
                     final String[] keys = m.getAnnotation(Events.Receiver.class).keys();
-                    if (keys != null) {
-                        if (keys.length > 0) {
+                    if (null != keys) {
+                        if (0 < keys.length) {
                             if (hasData) {
                                 throw new RuntimeException("You can't set both ids and keys in " + m.getName());
                             }
@@ -89,7 +91,9 @@ final class EventHandlerUtils {
                     final int realId =
                             getRealIdFromIdOrKey(m.getAnnotation(Events.AsyncMethod.class).value(), m.getAnnotation(Events.AsyncMethod.class).key());
 
-                    list.add(new EventHandler(m, EventHandler.Type.METHOD_ASYNC, realId, getCacheProvider(m)));
+                    final boolean singleThreadExecutor = m.getAnnotation(Events.AsyncMethod.class).singleThreadExecutor();
+
+                    list.add(new EventHandler(m, singleThreadExecutor ? EventHandler.Type.METHOD_ASYNC_SINGLE : EventHandler.Type.METHOD_ASYNC, realId, getCacheProvider(m)));
 
                 } else if (m.isAnnotationPresent(Events.UiMethod.class)) {
                     if (Events.isDebug) {
@@ -120,17 +124,17 @@ final class EventHandlerUtils {
             }
         }
 
-        if (clazz.getSuperclass() != null) {
+        if (null != clazz.getSuperclass()) {
             collectMethods(clazz.getSuperclass(), list);
         }
     }
 
     private static int getRealIdFromIdOrKey(final int id, final String key) {
-        if (id == 0 && "".equalsIgnoreCase(key)) {
+        if (0 == id && "".equalsIgnoreCase(key)) {
             throw new IllegalArgumentException("you should set id or key value here");
-        } else if (id != 0 && !"".equalsIgnoreCase(key)) {
+        } else if (0 != id && !"".equalsIgnoreCase(key)) {
             throw new IllegalArgumentException("you should NOT set both id and key values here");
-        } else if (id == 0) {
+        } else if (0 == id) {
             return Utils.convertKeyToId(key);
         } else {
             return id;
@@ -139,19 +143,17 @@ final class EventHandlerUtils {
 
     private static CacheProvider getCacheProvider(final Method method) {
         final Events.Cache an = method.getAnnotation(Events.Cache.class);
-        final Class<? extends CacheProvider> clazz = an == null ? null : an.value();
+        final Class<? extends CacheProvider> clazz = null == an ? null : an.value();
 
-        if (clazz == null) {
+        if (null == clazz) {
             return null;
         }
 
         try {
             return clazz.newInstance();
-        }
-        catch (final InstantiationException e) {
+        } catch (final InstantiationException e) {
             throw new RuntimeException("Cannot instantiate cache provider: " + clazz.getSimpleName(), e);
-        }
-        catch (final IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             throw new RuntimeException("Cannot instantiate cache provider: " + clazz.getSimpleName(), e);
         }
     }

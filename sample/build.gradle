@@ -1,12 +1,9 @@
 buildscript {
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
-        classpath 'com.alexvasilkov:android-sign-release:0.3.6'
     }
 }
 
-apply plugin: 'android'
-apply plugin: 'android-sign-release'
+apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion Integer.parseInt(ANDROID_COMPILE_SDK)
@@ -35,4 +32,5 @@ android {
 
 dependencies {
     compile project(':library')
+    compile 'com.android.support:appcompat-v7:24.0.0-alpha1'
 }

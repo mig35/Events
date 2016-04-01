@@ -35,7 +35,7 @@ class EventHandler {
         boolean isCacheUsed = false;
         Throwable error = null;
 
-        if (cache != null) {
+        if (null != cache) {
             // Asking cache provider for cached result
             try {
                 isCacheUsed = cache.loadFromCache((Event) parameter);
@@ -49,7 +49,7 @@ class EventHandler {
         }
 
         Object result = null;
-        if (!isCacheUsed && error == null) {
+        if (!isCacheUsed && null == error) {
             // Calling actual handler method
             try {
                 result = method.invoke(target, parameter);
@@ -62,7 +62,7 @@ class EventHandler {
             }
         }
 
-        if (cache != null && result != null) {
+        if (null != cache && null != result) {
             // Storing result in cache
             try {
                 cache.saveToCache((Event) parameter, result);
@@ -75,13 +75,13 @@ class EventHandler {
 
         if (type.isMethod()) {
             final Event event = (Event) parameter;
-            if (error == null) {
+            if (null == error) {
                 if (event.isPostponed) {
-                    if (result != null) {
+                    if (null != result) {
                         EventsDispatcher.sendResult(event, new Object[]{result});
                     }
                 } else {
-                    if (result == null) {
+                    if (null == result) {
                         EventsDispatcher.sendFinished(event);
                     } else {
                         EventsDispatcher.sendResultAndFinish(event, new Object[]{result});
@@ -99,18 +99,26 @@ class EventHandler {
 
 
     enum Type {
-        RECEIVER, METHOD_ASYNC, METHOD_UI, CALLBACK;
+        RECEIVER, METHOD_ASYNC, METHOD_ASYNC_SINGLE, METHOD_UI, CALLBACK;
 
         boolean isCallback() {
-            return this == CALLBACK;
+            return CALLBACK == this;
         }
 
         boolean isMethod() {
-            return this == METHOD_ASYNC || this == METHOD_UI;
+            return METHOD_UI == this || isAsync() || isAsyncSingle();
         }
 
         boolean isAsync() {
-            return this == METHOD_ASYNC;
+            return METHOD_ASYNC == this;
+        }
+
+        boolean isAsyncSingle() {
+            return METHOD_ASYNC_SINGLE == this;
+        }
+
+        boolean isReceiver() {
+            return RECEIVER == this;
         }
     }
 }

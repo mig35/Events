@@ -7,7 +7,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Do not use this class for <b>retain</b> fragments!
+ * Helper class for registering <b>NOT</b> retain Fragments.<br />
+ * Generally simple Events.register method register instance with hard reference and doesn't understand that different fragment objects can be in fact the same
+ * fragment but after configuration change.<br />
+ * So this class helps to manage fragment recreations. Fragments that are registered in this class will be registered, unregistered and resumed in proprete way.<br />
+ * So user can be sure about:<br />
+ * 1. Event that was posted before fragment recreation (or detach) with postTo (or post) will be routed to the new recreated (or attached) fragment (and not old one).<br />
+ * 2. No leaks will be occurred because of good register/unregister calls.<br />
+ * 3. No event will be triggered after onSaveInstanceState method call (after this call it is not save to perform any operation).<br />
+ * 4. No event will be triggered after fragment detach (its view destroy).
+ * <br />
+ * Do not use this class for <b>retain</b> fragments!<br/>
+ * Please call all lifecycle methods of this class
  * <p/>
  * Date: 9/15/2014
  * Time: 11:43 AM

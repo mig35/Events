@@ -15,14 +15,17 @@ import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+@SuppressWarnings("ProhibitedExceptionThrown")
 final class EventsDispatcher {
 
     private static final String TAG = EventsDispatcher.class.getSimpleName();
 
+    @SuppressWarnings("CollectionDeclaredAsConcreteClass")
     private static final LinkedList<EventReceiver> HANDLERS = new LinkedList<EventReceiver>();
 
     private static final Queue<QueuedEvent> QUEUE = new LinkedList<QueuedEvent>();
 
+    private static final ExecutorService ASYNC_SINGLE_EXECUTOR = Executors.newSingleThreadExecutor();
     private static final ExecutorService ASYNC_EXECUTOR = Executors.newCachedThreadPool();
 
     private static final SparseArray<List<Event>> STARTED_EVENTS = new SparseArray<List<Event>>();
@@ -37,6 +40,7 @@ final class EventsDispatcher {
     private static final int MSG_CANCEL_EVENT = 3;
     private static final int MSG_DISPATCH = 4;
 
+    @SuppressWarnings("OverlyComplexAnonymousInnerClass")
     private static final Handler MAIN_THREAD = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(final Message msg) {
@@ -72,7 +76,7 @@ final class EventsDispatcher {
     }
 
     static void register(final Object target, final boolean keepStrongReference, final String targetId, final Boolean markAsResumed) {
-        if (target == null) {
+        if (null == target) {
             throw new NullPointerException("Target cannot be null");
         }
         if (keepStrongReference && null != targetId) {
@@ -123,7 +127,7 @@ final class EventsDispatcher {
     }
 
     static void pause(final Object target, final String targetId) {
-        if (target == null || targetId == null) {
+        if (null == target || null == targetId) {
             throw new NullPointerException("Target and targetId cannot be null");
         }
 
@@ -151,7 +155,7 @@ final class EventsDispatcher {
     }
 
     static void resume(final Object target) {
-        if (target == null) {
+        if (null == target) {
             throw new NullPointerException("Target cannot be null");
         }
 
@@ -179,7 +183,7 @@ final class EventsDispatcher {
     }
 
     static void unregister(final Object target) {
-        if (target == null) {
+        if (null == target) {
             throw new NullPointerException("Target cannot be null");
         }
 
@@ -245,8 +249,20 @@ final class EventsDispatcher {
             if (null != singleEventsWithId) {
                 for (final Event singleEvent : singleEventsWithId) {
                     if (isSameEvent(event, singleEvent)) {
-                        if (event.eventReceiver.getTargetId().equals(singleEvent.eventReceiver.getTargetId())) {
+                        if (null == event.eventReceiver && null == singleEvent.eventReceiver) {
+                            // this is the same event for all receivers. so we should skip it.
                             return;
+                        }
+                        //noinspection StatementWithEmptyBody
+                        if (null != event.eventReceiver && null != singleEvent.eventReceiver) {
+                            // this is single event. we should check if this event has the same receiver
+                            if (event.eventReceiver.getTargetId().equals(singleEvent.eventReceiver.getTargetId())) {
+                                // receiver is the same. so skip
+                                return;
+                            }
+                            // this is an other receiver, so we should start this event again
+                        } else {
+                            // one event is for all item and an other is for single... we can't skip this event
                         }
                         break;
                     }
@@ -260,7 +276,7 @@ final class EventsDispatcher {
         }
 
         for (final EventReceiver receiver : HANDLERS) {
-            if (receiver.getMethods() == null) {
+            if (null == receiver.getMethods()) {
                 continue;
             }
 
@@ -268,8 +284,11 @@ final class EventsDispatcher {
                 if (method.getEventId() != eventId || method.getType().isCallback()) {
                     continue;
                 }
+                if (method.getType().isReceiver() && null != event.eventReceiver && !event.eventReceiver.getTargetId().equals(receiver.getTargetId())) {
+                    continue;
+                }
 
-                if (event.handlerType == null) {
+                if (null == event.handlerType) {
                     event.handlerType = method.getType();
                 } else if (event.handlerType.isMethod()) {
                     throw new RuntimeException("Event of type " + event.handlerType + " can have only one handler");
@@ -277,7 +296,7 @@ final class EventsDispatcher {
                     throw new RuntimeException("Event of type " + event.handlerType + " can't have handlers of type " + method.getType());
                 }
 
-                if (event.handlerType != null) {
+                if (null != event.handlerType) {
                     if (event.handlerType.isMethod()) {
                         postCallbackInternal(EventCallback.started(event));
                     }
@@ -290,7 +309,7 @@ final class EventsDispatcher {
             }
         }
 
-        if (event.handlerType != null) {
+        if (null != event.handlerType) {
             dispatchEvents();
         }
     }
@@ -306,7 +325,7 @@ final class EventsDispatcher {
         for (int i = 0; i < dataCount; ++i) {
             final Object eventDataItem = event.getData(i);
             final Object otherEventDataItem = otherEvent.getData(i);
-            if (null == eventDataItem ? otherEventDataItem != null : !eventDataItem.equals(otherEventDataItem)) {
+            if (null == eventDataItem ? null != otherEventDataItem : !eventDataItem.equals(otherEventDataItem)) {
                 return false;
             }
         }
@@ -318,18 +337,18 @@ final class EventsDispatcher {
     }
 
     private static void postCallbacks(final EventCallback... callbacks) {
-        if (null == callbacks || callbacks.length == 0) {
+        if (null == callbacks || 0 == callbacks.length) {
             throw new RuntimeException("Can't send empty callbacks");
         }
         for (final EventCallback callback : callbacks) {
             final EventHandler.Type handlerType = callback.getEvent().handlerType;
-            if (handlerType == null || !handlerType.isMethod()) {
+            if (null == handlerType || !handlerType.isMethod()) {
                 throw new RuntimeException("Cannot sent " + callback.getStatus() + " callback for event of type " + handlerType);
             }
         }
 
         // Asking main thread to handle this callback
-        if (callbacks.length == 1) {
+        if (1 == callbacks.length) {
             MAIN_THREAD.sendMessageDelayed(MAIN_THREAD.obtainMessage(MSG_POST_CALLBACK, callbacks[0]), MESSAGE_DELAY);
         } else {
             MAIN_THREAD.sendMessageDelayed(MAIN_THREAD.obtainMessage(MSG_POST_CALLBACKS, callbacks), MESSAGE_DELAY);
@@ -358,7 +377,7 @@ final class EventsDispatcher {
         if (callback.isStarted()) {
             // Saving started event
             List<Event> events = STARTED_EVENTS.get(eventId);
-            if (events == null) {
+            if (null == events) {
                 STARTED_EVENTS.put(eventId, events = new LinkedList<Event>());
             }
             events.add(event);
@@ -376,7 +395,7 @@ final class EventsDispatcher {
         }
 
         for (final EventReceiver receiver : HANDLERS) {
-            if (receiver.getMethods() == null) {
+            if (null == receiver.getMethods()) {
                 continue;
             }
 
@@ -384,7 +403,7 @@ final class EventsDispatcher {
                 if (method.getEventId() != eventId || !method.getType().isCallback()) {
                     continue;
                 }
-                if (event.eventReceiver != null && event.eventReceiver != receiver) {
+                if (null != event.eventReceiver && event.eventReceiver != receiver) {
                     continue;
                 }
 
@@ -427,7 +446,7 @@ final class EventsDispatcher {
     }
 
     private static void notifyStickyEvents(final EventReceiver receiver) {
-        if (receiver.getMethods() == null) {
+        if (null == receiver.getMethods()) {
             return;
         }
 
@@ -439,7 +458,7 @@ final class EventsDispatcher {
             final int eventId = method.getEventId();
 
             final List<Event> events = STARTED_EVENTS.get(eventId);
-            if (events != null) {
+            if (null != events) {
                 for (final Event event : events) {
                     if (null != event.eventReceiver && event.eventReceiver != receiver) {
                         continue;
@@ -505,7 +524,7 @@ final class EventsDispatcher {
             if (queuedEvent.isErrorHandling) {
                 // error handling don't have receiver, but other should have
                 final EventCallback callback = (EventCallback) queuedEvent.event;
-                if (!callback.isErrorHandled() && errorHandler != null) {
+                if (!callback.isErrorHandled() && null != errorHandler) {
                     errorHandler.onError(callback);
                 }
                 iterator.remove();
@@ -524,14 +543,18 @@ final class EventsDispatcher {
                         Log.d(TAG, "Dispatching: " + queuedEvent.method.getType() + " event = " + Utils.getName(queuedEvent.method.getEventId()));
                     }
 
-                    if (queuedEvent.method.getType().isAsync()) {
+                    final EventHandler.Type methodType = queuedEvent.method.getType();
+                    if (methodType.isAsync()) {
                         ASYNC_EXECUTOR.execute(new AsyncRunnable(queuedEvent));
-                    } else {
+                    } else if (methodType.isAsyncSingle()) {
+                        ASYNC_SINGLE_EXECUTOR.execute(new AsyncRunnable(queuedEvent));
+                    }
+                    else {
                         executeQueuedEvent(queuedEvent);
                     }
                 }
 
-                if (SystemClock.uptimeMillis() - started > MAX_TIME_IN_MAIN_THREAD) {
+                if (MAX_TIME_IN_MAIN_THREAD < SystemClock.uptimeMillis() - started) {
                     if (Events.isDebug) {
                         Log.d(TAG, "Dispatching: time in main thread = " + (SystemClock.uptimeMillis() - started) +
                                 "ms, scheduling next dispatch cycle");
@@ -550,7 +573,7 @@ final class EventsDispatcher {
         }
         final Object target = queuedEvent.receiver.getTarget();
 
-        if (target == null) {
+        if (null == target) {
             Log.d(TAG, "Dispatching: executeQueuedEvent = target == null");
 /*
             todo check if this code is needed

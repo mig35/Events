@@ -57,6 +57,9 @@ public class Event {
         EventsDispatcher.sendResult(this, result);
     }
 
+    /**
+     * After calling this, event will never be marked as finished automatically.
+     */
     public void postpone() {
         isPostponed = true;
     }
@@ -95,16 +98,26 @@ public class Event {
             return this;
         }
 
+        /**
+         * If there is the same event (with the same id and data) and this event doesn't post result to target callback, then no new event will be trigered.
+         * This is useful for big requests and handling activity recreation.
+         */
         public Builder single() {
             single = true;
             return this;
         }
 
+        /**
+         * @param single if true then {@link #single()}, else event will be send
+         */
         public Builder single(final boolean single) {
             this.single = single;
             return this;
         }
 
+        /**
+         * Post this event to any receiver callback that is registered now (and during event processing)
+         */
         public Event post() {
             final Event event = new Event(id, data);
             event.isSingleEvent = single;
@@ -112,6 +125,11 @@ public class Event {
             return event;
         }
 
+        /**
+         * Post this event only to this receiver. Even if there is registered other receiver for this eventId event will be triggered only for specified receiver
+         *
+         * @param receiver the only receiver callback to send event to
+         */
         public Event postTo(final Object receiver) {
             final Event event = new Event(id, data);
             event.isSingleEvent = single;

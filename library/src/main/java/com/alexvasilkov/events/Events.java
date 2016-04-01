@@ -1,9 +1,13 @@
 package com.alexvasilkov.events;
 
 import android.content.Context;
+
 import com.alexvasilkov.events.cache.CacheProvider;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * TODO: improvements
@@ -91,8 +95,8 @@ public final class Events {
      * <p/>
      * You <b>can't</b> set both value and key parameters. 0 and "" values are illegal.
      */
-    @java.lang.annotation.Target({ElementType.METHOD})
-    @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
     public @interface Receiver {
 
         int[] value() default {};
@@ -111,13 +115,15 @@ public final class Events {
      * <p/>
      * You <b>can't</b> set both value and key parameters. 0 and "" values are illegal.
      */
-    @java.lang.annotation.Target({ElementType.METHOD})
-    @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
     public @interface AsyncMethod {
 
         int value() default 0;
 
         String key() default "";
+
+        boolean singleThreadExecutor() default false;
     }
 
     /**
@@ -131,8 +137,8 @@ public final class Events {
      * <p/>
      * You <b>can't</b> set both value and key parameters. 0 and "" values are illegal.
      */
-    @java.lang.annotation.Target({ElementType.METHOD})
-    @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
     public @interface UiMethod {
 
         int value() default 0;
@@ -145,19 +151,19 @@ public final class Events {
      * {@link com.alexvasilkov.events.Events.AsyncMethod} or
      * {@link com.alexvasilkov.events.Events.UiMethod} annotation) with statuses:
      * <ul>
-     * <li/>{@link com.alexvasilkov.events.EventCallback.Status#STARTED}
-     * <li/>{@link com.alexvasilkov.events.EventCallback.Status#RESULT}<br/>
+     * <li/>{@link EventCallback.Status#STARTED}
+     * <li/>{@link EventCallback.Status#RESULT}<br/>
      * Methods {@link EventCallback#getResult()} and {@link EventCallback#getResult(int)} can be used
      * to retrieve the result
-     * <li/>{@link com.alexvasilkov.events.EventCallback.Status#ERROR}<br/>
+     * <li/>{@link EventCallback.Status#ERROR}<br/>
      * Method {@link EventCallback#getError()} can be used to retrieve the error.
-     * <li/>{@link com.alexvasilkov.events.EventCallback.Status#FINISHED}
+     * <li/>{@link EventCallback.Status#FINISHED}
      * </ul>
      * <p/>
      * You <b>can't</b> set both value and key parameters. 0 and "" values are illegal.
      */
-    @java.lang.annotation.Target({ElementType.METHOD})
-    @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
     public @interface Callback {
 
         int value() default 0;
@@ -165,8 +171,8 @@ public final class Events {
         String key() default "";
     }
 
-    @java.lang.annotation.Target({ElementType.METHOD})
-    @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
     public @interface Cache {
 
         Class<? extends CacheProvider> value();

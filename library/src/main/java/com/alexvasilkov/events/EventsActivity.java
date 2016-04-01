@@ -8,8 +8,16 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Date: 9/15/2014
- * Time: 11:22 AM
+ * Helper class for registering Activities.<br />
+ * Generally simple Events.register method register instance with hard reference and doesn't understand that different activity objects can be in fact the same
+ * activity but after configuration change.<br />
+ * So this class helps to manage activity recreations. Activities that are registered in this class will be registered, unregistered and resumed in proprete way.<br />
+ * So user can be sure about:<br />
+ * 1. Event that was posted before activity recreation with postTo (or post) will be routed to the new recreated activity (and not old one).<br />
+ * 2. No leaks will be occurred because of good register/unregister calls.<br />
+ * 3. No event will be triggered after onSaveInstanceState method call (after this call it is not save to perform any operation).<br />
+ * <br />
+ * Please call all lifecycle methods of this class
  *
  * @author MiG35
  */
