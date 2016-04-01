@@ -10,6 +10,7 @@ public final class SampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        Events.setAppContext(this);
         Events.register(new EventsHolder());
     }
 }
