@@ -123,6 +123,9 @@ public final class Events {
 
         String key() default "";
 
+        /**
+         * If true then SingleThreadExecutor instance will be used for processing this event. Be aware that there is only one instance of executor for all events
+         */
         boolean singleThreadExecutor() default false;
     }
 
