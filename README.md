@@ -37,7 +37,7 @@ This method should have this signature
 
     private AnyClass runTask1(final Event event) throws Exception
 
-Can be only ONE in all application
+Can be only ONE in all application.
 This method will be executed in background thread when somebody started this event.
 If you return result from this method this result will be passed to any Callback method for this event id.
 If you return null no result will be passed to Callback.
@@ -46,7 +46,7 @@ If you return null no result will be passed to Callback.
 
     private AnyClass runTask1(final Event event) throws Exception
 
-Same as AsyncMethod, but will be executed in UI thread
+Same as AsyncMethod, but will be executed in UI thread.
 Can be only ONE in all application
 
 # Callback
