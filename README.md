@@ -37,9 +37,9 @@ This method should have this signature
 
     private AnyClass runTask1(final Event event) throws Exception
 
-Can be only ONE in all application.
-This method will be executed in background thread when somebody started this event.
-If you return result from this method this result will be passed to any Callback method for this event id.
+Can be only ONE in all application for one event id (or key).
+This method will be executed in background thread when somebody starts this event.
+If you return result from this method this result will be passed to Callback method for this event id.
 If you return null no result will be passed to Callback.
 
 # UiMethod
@@ -47,14 +47,14 @@ If you return null no result will be passed to Callback.
     private AnyClass runTask1(final Event event) throws Exception
 
 Same as AsyncMethod, but will be executed in UI thread.
-Can be only ONE in all application
+Can be only ONE in all application for one event id (or key)
 
 # Callback
 
     private void runTask1(final EventCallback callback)
 
 Called on UI thread any time when Event state changes. Support: start, result, error, finish.
-Can be any count of the callbacks in application, but only one in class.
+Can be any count of the callbacks in application, but only one in class for one event id (or key).
 
 # Receiver
 
@@ -68,8 +68,8 @@ Called on UI thread. This is a broadcast element of the event. There can be any 
 For event creation you should user Event.create method (or simple Events.post).
 Main features:
 * data		- data that will be passed to Event during its execution
-* single	- indicates that only one event with the same id and data should be processed at time. event will be skipped only if it is in progress now and has the same target.
-* post 	- target of the event to post result to. this means that there is no specific target and any Callback will be called.
+* single	- indicates that only one event with the same id and data should be processed at time. event will be skipped only if it is in progress now and has the same target. usefull for activity/fragment recreation (see Activity and Fragment recreation problem)
+* post 	    - target of the event to post result to. this means that there is no specific target and any Callback will be called.
 * postTo 	- target of the event to post result to. this means that only this instance Callbacks will be called.
 
 
@@ -97,6 +97,11 @@ To handle all activity and fragment recreations and good work of postTo you shou
 * No leaks will be occurred because of good register/unregister calls.
 * No event will be triggered after onSaveInstanceState method call (after this call it is not save to perform any operation).
 * No event will be triggered after fragment detach (its view destroy).
+General usage for getting some data from server:
+* Check if there is cached data in saved instance state. if there is one, then show it
+* If not, start event with single key. So you can be sure that even after activity/fragment recreation there will be only one request to server for data.
+* Handle event result and store its result in saved instance state.
+
 
 Call all bellow methods:
 * onCreate
