@@ -85,11 +85,11 @@ Main features:
 
 * General annotation parameters:
 
-* * value    - constant int value, generally it is android id identifier. notice that in library projects android id identifier can't be used because it is not constant value instead of them you can use "static final int" value or "key" annotation parameter. value can not be 0.
-* * key      - constant string value. value can not be null or empty string.
+  * value    - constant int value, generally it is android id identifier. notice that in library projects android id identifier can't be used because it is not constant value instead of them you can use "static final int" value or "key" annotation parameter. value can not be 0.
+  * key      - constant string value. value can not be null or empty string.
 * Special annotation parameters:
 
-* * singleThreadExecutor - parameter of AsyncMethod. if true then SingleThreadExecutor instance will be used for processing this event. Be aware that there is only one instance of executor for all events.
+  * singleThreadExecutor - parameter of AsyncMethod. if true then SingleThreadExecutor instance will be used for processing this event. Be aware that there is only one instance of executor for all events.
 
 
 # Activity and Fragment recreation problem:
