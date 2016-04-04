@@ -10,11 +10,11 @@ final class Utils {
     private static final Map<String, Integer> NAME_ANDROID_IDS = new HashMap<String, Integer>();
 
     static String getName(final int resourceId) {
-        if (Events.appContext != null) {
+        if (null != Events.appContext) {
             try {
                 return Events.appContext.getResources().getResourceEntryName(resourceId);
             }
-            catch (final Resources.NotFoundException e) {
+            catch (final Resources.NotFoundException ignored) {
                 // Returning id itself (below)
             }
         }
@@ -23,7 +23,7 @@ final class Utils {
     }
 
     static String getClassName(final Object obj) {
-        return obj == null ? "null" : obj.getClass().getSimpleName();
+        return null == obj ? "null" : obj.getClass().getSimpleName();
     }
 
     static int convertKeyToId(final String str) {
