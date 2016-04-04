@@ -84,9 +84,11 @@ Main features:
 # Annotation parameters
 
 * General annotation parameters:
+
 ** value    - constant int value, generally it is android id identifier. notice that in library projects android id identifier can't be used because it is not constant value instead of them you can use "static final int" value or "key" annotation parameter. value can not be 0.
 ** key      - constant string value. value can not be null or empty string.
 * Special annotation parameters:
+
 ** singleThreadExecutor - parameter of AsyncMethod. if true then SingleThreadExecutor instance will be used for processing this event. Be aware that there is only one instance of executor for all events.
 
 
@@ -97,6 +99,7 @@ To handle all activity and fragment recreations and good work of postTo you shou
 * No leaks will be occurred because of good register/unregister calls.
 * No event will be triggered after onSaveInstanceState method call (after this call it is not save to perform any operation).
 * No event will be triggered after fragment detach (its view destroy).
+
 General usage for getting some data from server:
 * Check if there is cached data in saved instance state. if there is one, then show it
 * If not, start event with single key. So you can be sure that even after activity/fragment recreation there will be only one request to server for data.
