@@ -1,4 +1,4 @@
-package com.alexvasilkov.events;
+package com.azoft.events;
 
 import android.util.Log;
 

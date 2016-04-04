@@ -1,4 +1,4 @@
-package com.alexvasilkov.events;
+package com.azoft.events;
 
 public class Event {
 
@@ -6,6 +6,9 @@ public class Event {
     private final Object[] data;
 
     EventHandler.Type handlerType;
+
+    // this field is inited only if we want one receiver for this event
+    EventReceiver eventReceiver;
 
     // Whether "finished" callback was already sent and all subsequent callbacks should be ignored.
     boolean isFinished;
@@ -18,7 +21,10 @@ public class Event {
     // after handler method is finished.
     boolean isPostponed;
 
-    Event(int id, Object[] data) {
+    // Whether event was posted. It will be performed only once. An other starts will skipped.
+    boolean isSingleEvent;
+
+    Event(final int id, final Object[] data) {
         this.id = id;
         this.data = data;
     }
@@ -32,7 +38,7 @@ public class Event {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getData(int index) {
+    public <T> T getData(final int index) {
         return data == null || data.length <= index ? null : (T) data[index];
     }
 
@@ -47,10 +53,13 @@ public class Event {
      * You can only use this method with events received inside methods marked with
      * {@link Events.AsyncMethod} or {@link Events.UiMethod} annotations.
      */
-    public void sendResult(Object... result) {
+    public void sendResult(final Object... result) {
         EventsDispatcher.sendResult(this, result);
     }
 
+    /**
+     * After calling this, event will never be marked as finished automatically.
+     */
     public void postpone() {
         isPostponed = true;
     }
@@ -78,22 +87,54 @@ public class Event {
 
         private final int id;
         private Object[] data;
+        private boolean single;
 
-        Builder(int id) {
+        Builder(final int id) {
             this.id = id;
         }
 
-        public Builder data(Object... data) {
+        public Builder data(final Object... data) {
             this.data = data;
             return this;
         }
 
+        /**
+         * If there is the same event (with the same id and data) and this event doesn't post result to target callback, then no new event will be trigered.
+         * This is useful for big requests and handling activity recreation.
+         */
+        public Builder single() {
+            single = true;
+            return this;
+        }
+
+        /**
+         * @param single if true then {@link #single()}, else event will be send
+         */
+        public Builder single(final boolean single) {
+            this.single = single;
+            return this;
+        }
+
+        /**
+         * Post this event to any receiver callback that is registered now (and during event processing)
+         */
         public Event post() {
-            Event event = new Event(id, data);
+            final Event event = new Event(id, data);
+            event.isSingleEvent = single;
             EventsDispatcher.postEvent(event);
             return event;
         }
 
+        /**
+         * Post this event only to this receiver. Even if there is registered other receiver for this eventId event will be triggered only for specified receiver
+         *
+         * @param receiver the only receiver callback to send event to
+         */
+        public Event postTo(final Object receiver) {
+            final Event event = new Event(id, data);
+            event.isSingleEvent = single;
+            EventsDispatcher.postEventTo(event, receiver);
+            return event;
+        }
     }
-
 }
