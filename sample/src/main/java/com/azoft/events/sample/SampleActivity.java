@@ -29,6 +29,7 @@ public final class SampleActivity extends BaseActivity {
             // single event is good for activity recreation. we can be sure that only one event is executing in the moment event if we send a lot of single events
             // postTo is good to be sure that event result will be triggered only for this Activity instance (activity recreations are handled in sdk,
             // so this different instances because of recreation are the same for postTo method). This is true because of using EventsActivity and EventsFragment class for registering
+            Events.create(R.id.event_2).single().data("hello").postTo(this);
             Events.create(R.id.event_2).single().data("hello").post();
         }
 

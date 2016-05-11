@@ -85,10 +85,10 @@ final class EventsDispatcher {
 
         EventReceiver eventReceiver = null;
         for (final EventReceiver receiver : HANDLERS) {
-            if (null == targetId && receiver.getTarget() == target) {
+            if (Objects.equalsTargets(targetId, receiver.getTarget())) {
                 throw new RuntimeException("Events receiver " + Utils.getClassName(target) + " already registered");
             }
-            if (null != targetId && targetId.equals(receiver.getTargetId())) {
+            if (Objects.equalsTargetIds(targetId, receiver.getTargetId())) {
                 if (null != eventReceiver) {
                     throw new IllegalStateException("double receivers with same targetId found");
                 }
@@ -134,7 +134,7 @@ final class EventsDispatcher {
         boolean notFound = true;
 
         for (final EventReceiver receiver : HANDLERS) {
-            if (receiver.getTarget() == target || targetId.equals(receiver.getTargetId())) {
+            if (Objects.equalsTargets(receiver.getTarget(), target) || Objects.equalsTargetIds(targetId, receiver.getTargetId())) {
                 if (receiver.isInPause()) {
                     // already in pause. nothing to do
                     return;
@@ -255,8 +255,10 @@ final class EventsDispatcher {
                         }
                         //noinspection StatementWithEmptyBody
                         if (null != event.eventReceiver && null != singleEvent.eventReceiver) {
+
                             // this is single event. we should check if this event has the same receiver
-                            if (event.eventReceiver.getTargetId().equals(singleEvent.eventReceiver.getTargetId())) {
+                            if (Objects.equalsTargets(event.eventReceiver.getTarget(), singleEvent.eventReceiver.getTarget()) ||
+                                    Objects.equalsTargetIds(event.eventReceiver.getTargetId(), singleEvent.eventReceiver.getTargetId())) {
                                 // receiver is the same. so skip
                                 return;
                             }
@@ -284,8 +286,11 @@ final class EventsDispatcher {
                 if (method.getEventId() != eventId || method.getType().isCallback()) {
                     continue;
                 }
-                if (method.getType().isReceiver() && null != event.eventReceiver && !event.eventReceiver.getTargetId().equals(receiver.getTargetId())) {
-                    continue;
+                if (method.getType().isReceiver() && null != event.eventReceiver) {
+                    if (!(Objects.equalsTargets(event.eventReceiver.getTarget(), receiver.getTarget()) ||
+                            Objects.equalsTargetIds(event.eventReceiver.getTargetId(), receiver.getTargetId()))) {
+                        continue;
+                    }
                 }
 
                 if (null == event.handlerType) {
@@ -548,8 +553,7 @@ final class EventsDispatcher {
                         ASYNC_EXECUTOR.execute(new AsyncRunnable(queuedEvent));
                     } else if (methodType.isAsyncSingle()) {
                         ASYNC_SINGLE_EXECUTOR.execute(new AsyncRunnable(queuedEvent));
-                    }
-                    else {
+                    } else {
                         executeQueuedEvent(queuedEvent);
                     }
                 }
