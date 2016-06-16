@@ -6,31 +6,25 @@ buildscript {
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion Integer.parseInt(ANDROID_COMPILE_SDK)
-    buildToolsVersion ANDROID_BUILD_TOOLS_VERSION
+    compileSdkVersion 23
+    buildToolsVersion "24"
 
     defaultConfig {
-        minSdkVersion Integer.parseInt(ANDROID_MIN_SDK)
-        targetSdkVersion Integer.parseInt(ANDROID_TARGET_SDK)
-        versionCode Integer.parseInt(VERSION_CODE)
-        versionName VERSION_NAME
-    }
-
-    signingConfigs {
-        release {
-            storeFile file("events-release-key.keystore")
-            keyAlias "release"
-        }
+        minSdkVersion 11
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
     }
 
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 dependencies {
-    compile project(':library')
-    compile 'com.android.support:appcompat-v7:24.0.0-alpha1'
+    compile project(':events')
+    compile 'com.android.support:appcompat-v7:23.4.0'
 }

@@ -1,6 +1,7 @@
 package com.azoft.events;
 
 import android.util.Log;
+
 import com.azoft.events.cache.CacheProvider;
 
 import java.lang.reflect.InvocationTargetException;
@@ -94,6 +95,8 @@ class EventHandler {
                     EventsDispatcher.sendErrorAndFinished(event, error);
                 }
             }
+        } else if (null != error) {
+            throw new RuntimeException(error);
         }
     }
 
