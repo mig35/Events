@@ -4,9 +4,9 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.2'
+        classpath 'com.android.tools.build:gradle:2.2.2'
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2"
-        classpath "com.github.dcendents:android-maven-gradle-plugin:1.3"
+        classpath "com.github.dcendents:android-maven-gradle-plugin:1.4.1"
         classpath "com.github.dcendents:android-maven-plugin:1.2"
     }
 }
@@ -21,7 +21,7 @@ group = "com.azoft.events"
 final def siteUrl = 'https://github.com/mig35/Events'
 final def gitUrl = "https://github.com/mig35/Events.git"
 // This is the library version used when deploying the artifact
-version = "0.9"
+version = "0.10"
 
 final Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
@@ -76,7 +76,7 @@ install {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "24"
+    buildToolsVersion "24.0.3"
     resourcePrefix "events__"
 
     defaultConfig {

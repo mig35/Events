@@ -15,7 +15,7 @@ import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@SuppressWarnings("ProhibitedExceptionThrown")
+@SuppressWarnings({"ProhibitedExceptionThrown", "OverlyComplexClass"})
 final class EventsDispatcher {
 
     private static final String TAG = EventsDispatcher.class.getSimpleName();
@@ -44,6 +44,7 @@ final class EventsDispatcher {
     private static final Handler MAIN_THREAD = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(final Message msg) {
+            //noinspection SwitchStatementWithoutDefaultBranch
             switch (msg.what) {
                 case MSG_POST_EVENT:
                     postEventInternal((Event) msg.obj);
@@ -66,15 +67,17 @@ final class EventsDispatcher {
         }
     };
 
-    private static EventsErrorHandler errorHandler = EventsErrorHandler.DEFAULT;
+    private static EventsErrorHandler sEventsErrorHandler = EventsErrorHandler.DEFAULT;
 
     private EventsDispatcher() {
     }
 
-    static void setErrorHandler(final EventsErrorHandler handler) {
-        errorHandler = handler;
+    @SuppressWarnings("SuspiciousGetterSetter")
+    static void setEventsErrorHandler(final EventsErrorHandler handler) {
+        sEventsErrorHandler = handler;
     }
 
+    @SuppressWarnings({"MethodWithMoreThanThreeNegations", "OverlyComplexMethod", "OverlyLongMethod", "VariableNotUsedInsideIf"})
     static void register(final Object target, final boolean keepStrongReference, final String targetId, final Boolean markAsResumed) {
         if (null == target) {
             throw new NullPointerException("Target cannot be null");
@@ -161,7 +164,7 @@ final class EventsDispatcher {
 
         EventReceiver targetReceiver = null;
         for (final EventReceiver receiver : HANDLERS) {
-            if (receiver.getTarget() == target) {
+            if (Objects.equals(receiver.getTarget(), target)) {
                 if (!receiver.isInPause()) {
                     // already in resume. nothing to do
                     return;
@@ -191,7 +194,7 @@ final class EventsDispatcher {
 
         for (final Iterator<EventReceiver> iterator = HANDLERS.iterator(); iterator.hasNext(); ) {
             final EventReceiver receiver = iterator.next();
-            if (receiver.getTarget() == target) {
+            if (Objects.equals(receiver.getTarget(), target)) {
                 receiver.markAsUnregistered();
                 iterator.remove();
                 isUnregistered = true;
@@ -213,12 +216,12 @@ final class EventsDispatcher {
         if (null == receiver) {
             throw new NullPointerException("receiver can't be null");
         }
-        if (Looper.getMainLooper() != Looper.myLooper()) {
+        if (!Objects.equals(Looper.getMainLooper(), Looper.myLooper())) {
             throw new IllegalStateException("This method can only be called on MainThread");
         }
         EventReceiver singleReceiver = null;
         for (final EventReceiver eventReceiver : HANDLERS) {
-            if (receiver == eventReceiver.getTarget()) {
+            if (Objects.equals(receiver, eventReceiver.getTarget())) {
                 singleReceiver = eventReceiver;
                 break;
             }
@@ -238,6 +241,7 @@ final class EventsDispatcher {
     /**
      * This method will always be called from UI thread
      */
+    @SuppressWarnings("VariableNotUsedInsideIf")
     private static void postEventInternal(final Event event) {
         final int eventId = event.getId();
 
@@ -301,15 +305,19 @@ final class EventsDispatcher {
                     throw new RuntimeException("Event of type " + event.handlerType + " can't have handlers of type " + method.getType());
                 }
 
-                if (null != event.handlerType) {
-                    if (event.handlerType.isMethod()) {
-                        postCallbackInternal(EventCallback.started(event));
+                if (event.isCanceled) {
+                    Log.d(TAG, "Canceled event tried to scheduled: " + Utils.getName(eventId) + " / type = " + method.getType());
+                } else {
+                    if (null != event.handlerType) {
+                        if (event.handlerType.isMethod()) {
+                            postCallbackInternal(EventCallback.started(event));
+                        }
                     }
-                }
-                QUEUE.add(QueuedEvent.create(receiver, method, event));
+                    QUEUE.add(QueuedEvent.create(receiver, method, event));
 
-                if (Events.isDebug) {
-                    Log.d(TAG, "Event scheduled: " + Utils.getName(eventId) + " / type = " + method.getType());
+                    if (Events.isDebug) {
+                        Log.d(TAG, "Event scheduled: " + Utils.getName(eventId) + " / type = " + method.getType());
+                    }
                 }
             }
         }
@@ -389,13 +397,18 @@ final class EventsDispatcher {
         } else if (callback.isFinished()) {
             // Removing finished event
             STARTED_EVENTS.get(eventId).remove(event);
-            event.isFinished = true;
 
             if (event.isSingleEvent) {
                 final List<Event> singleEventsWithId = SINGLE_EVENTS.get(eventId);
                 if (null != singleEventsWithId) {
                     singleEventsWithId.remove(event);
                 }
+            }
+
+            if (event.isFinished) {
+                return;
+            } else {
+                event.isFinished = true;
             }
         }
 
@@ -408,7 +421,7 @@ final class EventsDispatcher {
                 if (method.getEventId() != eventId || !method.getType().isCallback()) {
                     continue;
                 }
-                if (null != event.eventReceiver && event.eventReceiver != receiver) {
+                if (null != event.eventReceiver && !Objects.equals(event.eventReceiver, receiver)) {
                     continue;
                 }
 
@@ -465,7 +478,7 @@ final class EventsDispatcher {
             final List<Event> events = STARTED_EVENTS.get(eventId);
             if (null != events) {
                 for (final Event event : events) {
-                    if (null != event.eventReceiver && event.eventReceiver != receiver) {
+                    if (null != event.eventReceiver && !Objects.equals(event.eventReceiver, receiver)) {
                         continue;
                     }
 
@@ -488,17 +501,21 @@ final class EventsDispatcher {
      * This method will always be called from UI thread
      */
     private static void cancelEventInternal(final Event event) {
-        for (final Iterator<QueuedEvent> iterator = QUEUE.iterator(); iterator.hasNext(); ) {
-            if (iterator.next().event == event) {
-                iterator.remove();
+        if (!event.isCanceled && !event.isFinished) {
+            for (final Iterator<QueuedEvent> iterator = QUEUE.iterator(); iterator.hasNext(); ) {
+                if (Objects.equals(iterator.next().event, event)) {
+                    iterator.remove();
+                }
             }
-        }
 
-        if (!event.isCanceled) {
             if (Events.isDebug) {
                 Log.d(TAG, "Canceling event: " + Utils.getName(event.getId()));
             }
             event.isCanceled = true;
+            if (event.isSingleEvent && null == event.handlerType) {
+                // some single events are not processed
+                return;
+            }
             postCallback(EventCallback.finished(event));
         }
 
@@ -529,8 +546,8 @@ final class EventsDispatcher {
             if (queuedEvent.isErrorHandling) {
                 // error handling don't have receiver, but other should have
                 final EventCallback callback = (EventCallback) queuedEvent.event;
-                if (!callback.isErrorHandled() && null != errorHandler) {
-                    errorHandler.onError(callback);
+                if (!callback.isErrorHandled() && null != sEventsErrorHandler) {
+                    sEventsErrorHandler.onError(callback);
                 }
                 iterator.remove();
             } else {

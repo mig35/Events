@@ -39,7 +39,7 @@ public final class Events {
     }
 
     public static void setErrorHandler(final EventsErrorHandler handler) {
-        EventsDispatcher.setErrorHandler(handler);
+        EventsDispatcher.setEventsErrorHandler(handler);
     }
 
     public static void register(final Object receiver) {

@@ -19,8 +19,9 @@ final class EventsHolder {
     }
 
     @Events.UiMethod(R.id.event_2)
-    private void runTask2P3(final Event event) throws Exception {
+    private Object runTask2P3(final Event event) throws Exception {
         Log.d(TAG, "Postponing event 2");
+/*
         event.postpone();
 
         event.sendResult("first result");
@@ -34,5 +35,7 @@ final class EventsHolder {
                 event.finish();
             }
         }, 5000);
+*/
+        return "result";
     }
 }
